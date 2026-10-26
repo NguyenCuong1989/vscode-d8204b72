@@ -7,10 +7,11 @@ import * as DOM from '../../base/browser/dom.js';
 import { disposableTimeout } from '../../base/common/async.js';
 import { Disposable, DisposableMap, DisposableStore, IDisposable } from '../../base/common/lifecycle.js';
 import { ThemeIcon } from '../../base/common/themables.js';
+import { URI } from '../../base/common/uri.js';
 import { createPixelSpinner } from '../../base/browser/ui/pixelSpinner/pixelSpinner.js';
 import { asCssVariable } from '../../platform/theme/common/colorUtils.js';
 import { IAccessibilityService } from '../../platform/accessibility/common/accessibility.js';
-import { isActiveSessionStatus, SessionStatus } from '../services/sessions/common/session.js';
+import { SessionStatus } from '../services/sessions/common/session.js';
 import { ISessionsListModelService } from '../services/sessions/browser/sessionsListModelService.js';
 
 const $ = DOM.$;
@@ -22,12 +23,10 @@ const ICON_SWAP_FADE_MS = 180;
 // follow-up swap (before the previous fade finishes) skip re-processing it.
 const ICON_FADING_OUT_ATTR = 'iconFadingOut';
 
-// Sentinel cache keys used when the icon container holds an animated pixel
-// spinner (vs. a codicon). Distinct per variant so transitions between variants
-// rebuild the DOM, while same-variant re-renders only update color and avoid
-// restarting the CSS animation.
+// Sentinel cache key used when the icon container holds an animated pixel
+// spinner (vs. a codicon), so re-renders only update color and avoid restarting
+// the CSS animation.
 const PIXEL_SPINNER_GRID_KEY = '__pixel_spinner_grid__';
-const PIXEL_SPINNER_RING_KEY = '__pixel_spinner_ring__';
 
 interface ISessionStatusInputs {
 	readonly status: SessionStatus;
@@ -38,9 +37,9 @@ interface ISessionStatusInputs {
 
 /**
  * Renders a session's status indicator into a host-provided container and keeps it
- * up to date. In-progress / needs-input sessions get the animated pixel spinner
- * (grid variant for in-progress, ring for needs-input) when motion is allowed;
- * other states render the codicon from {@link ISessionsListModelService.getStatusIcon}.
+ * up to date. In-progress sessions get the animated pixel spinner when motion is
+ * allowed; other states render the codicon from
+ * {@link ISessionsListModelService.getStatusIcon}.
  *
  * The widget owns all rendering concerns so every surface (sessions list, session
  * header, …) stays in sync by simply hosting it:
@@ -49,13 +48,13 @@ interface ISessionStatusInputs {
  * - cross-fades between glyphs/variants,
  * - re-renders automatically when the reduced-motion preference changes.
  *
- * Call {@link setStatus} on every status/read/archive change, and {@link reset}
- * to snap (no cross-fade) the next render — e.g. when the host is rebound to a
- * different session.
+ * Call {@link setStatus} on every status/read/archive change. Reusable hosts pass
+ * the session resource so rebinding snaps instead of cross-fading stale content.
  */
 export class SessionStatusIcon extends Disposable {
 
 	private _currentCacheKey: string | undefined;
+	private _currentSessionResource: string | undefined;
 	private _lastInputs: ISessionStatusInputs | undefined;
 
 	/** Owns the removal timers for outgoing icons mid cross-fade. */
@@ -83,9 +82,15 @@ export class SessionStatusIcon extends Disposable {
 
 	/**
 	 * Updates the rendered status. Cross-fades when the glyph/variant changes
-	 * (after the first render); identical re-renders only refresh the color.
+	 * within one session; a different session resource snaps to the new icon.
 	 */
-	setStatus(status: SessionStatus, isRead: boolean, isArchived: boolean, completedStateIcon?: ThemeIcon): void {
+	setStatus(status: SessionStatus, isRead: boolean, isArchived: boolean, completedStateIcon?: ThemeIcon, sessionResource?: URI): void {
+		const sessionResourceKey = sessionResource?.toString();
+		if (sessionResourceKey !== undefined && sessionResourceKey !== this._currentSessionResource) {
+			this.reset();
+			this._currentSessionResource = sessionResourceKey;
+		}
+
 		const inputs: ISessionStatusInputs = { status, isRead, isArchived, completedStateIcon };
 		this._lastInputs = inputs;
 		this._render(inputs);
@@ -97,6 +102,7 @@ export class SessionStatusIcon extends Disposable {
 	 */
 	reset(): void {
 		this._currentCacheKey = undefined;
+		this._currentSessionResource = undefined;
 		this._lastInputs = undefined;
 		this._swapStore.clear();
 		this._iconDisposables.clearAndDisposeAll();
@@ -105,18 +111,16 @@ export class SessionStatusIcon extends Disposable {
 
 	private _render(inputs: ISessionStatusInputs): void {
 		const { status, isRead, isArchived, completedStateIcon } = inputs;
-		const isSpinner = isActiveSessionStatus(status) && !this._accessibilityService.isMotionReduced();
+		const isSpinner = status === SessionStatus.InProgress && !this._accessibilityService.isMotionReduced();
 
 		let cacheKey: string;
 		let color: string;
 		let createIcon: () => { element: HTMLElement; disposable?: IDisposable };
 		if (isSpinner) {
-			const isNeedsInput = status === SessionStatus.NeedsInput;
-			const variant: 'grid' | 'ring' = isNeedsInput ? 'ring' : 'grid';
-			cacheKey = isNeedsInput ? PIXEL_SPINNER_RING_KEY : PIXEL_SPINNER_GRID_KEY;
-			color = isNeedsInput ? asCssVariable('list.warningForeground') : asCssVariable('textLink.foreground');
+			cacheKey = PIXEL_SPINNER_GRID_KEY;
+			color = asCssVariable('textLink.foreground');
 			createIcon = () => {
-				const spinner = createPixelSpinner(undefined, { variant });
+				const spinner = createPixelSpinner(undefined, { variant: 'grid' });
 				return { element: spinner.element, disposable: spinner };
 			};
 		} else {
@@ -125,9 +129,6 @@ export class SessionStatusIcon extends Disposable {
 			color = icon.color ? asCssVariable(icon.color.id) : '';
 			createIcon = () => ({ element: $(`span${cacheKey}`) });
 		}
-
-		// Reduced-motion fallback for needs-input pulses the codicon; harmless when a spinner is shown.
-		this._container.classList.toggle('session-icon-pulse', status === SessionStatus.NeedsInput);
 
 		if (this._currentCacheKey === cacheKey) {
 			this._recolorActiveIcon(color);

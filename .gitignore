@@ -2,7 +2,8 @@
 .cache
 npm-debug.log
 Thumbs.db
-node_modules/
+# No trailing slash, so a symlinked node_modules is ignored too
+node_modules
 .tmp/
 .build/
 /extensionsCG/
@@ -14,8 +15,7 @@ src/vs/base/browser/ui/codicons/codicon/codicon.ttf
 build/node_modules
 build/darwin/.dmgbuild
 coverage/
-!src/vs/platform/agentHost/test/node/protocol/coverage/
-!src/vs/platform/agentHost/test/node/protocol/coverage/agentHostE2E.json
+!/src/vs/platform/agentHost/test/node/e2e/coverage/
 test_data/
 test-results/
 test-results.xml
@@ -24,6 +24,7 @@ vscode.db
 /.profile-oss
 /cli/target
 /cli/openssl
+/copilot_shim/target
 product.overrides.json
 *.snap.actual
 *.tsbuildinfo
@@ -33,7 +34,6 @@ product.overrides.json
 vscode-telemetry-docs/
 test-output.json
 test/componentFixtures/.screenshots/*
-!test/componentFixtures/.screenshots/baseline/
 dist
 .playwright-cli
 .playwright-mcp
@@ -56,3 +56,7 @@ dist
 .snapshots/
 .cursor/
 extensions/mermaid-chat-features/chat-webview-out/
+# Throwaway Code OSS dev profiles created by the launch skill
+.v[0-9]*/
+# Local agent validation evidence
+.agent-validation/

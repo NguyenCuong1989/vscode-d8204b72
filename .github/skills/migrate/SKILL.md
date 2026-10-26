@@ -1,6 +1,11 @@
 ---
+<<<<<<<< HEAD:.github/skills/migrate/SKILL.md
 name: migrate
 description: migrate
+========
+name: migrate-issues
+description: migrate GitHub issues from one repository to another
+>>>>>>>> main:.github/skills/migrate-issues/SKILL.md
 disable-model-invocation: true
 ---
 # Issue Migration Prompt

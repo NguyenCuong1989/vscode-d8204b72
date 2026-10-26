@@ -7,11 +7,12 @@ import { IObservable } from '../../../../../base/common/observable.js';
 import { ContextKeyExpr } from '../../../../../platform/contextkey/common/contextkey.js';
 import { EditorPartModalVisibleContext } from '../../../../../workbench/common/contextkeys.js';
 import { ChatContextKeys } from '../../../../../workbench/contrib/chat/common/actions/chatContextKeys.js';
+import { onboardingScenarioRegistry } from '../../../../../workbench/contrib/onboarding/common/onboardingRegistry.js';
 import { IOnboardingScenario } from '../../../../../workbench/contrib/onboarding/common/onboardingScenario.js';
 import { ISpotlightPayload, SPOTLIGHT_PRESENTATION_KIND } from '../../../../../workbench/contrib/onboarding/browser/spotlight/spotlightTypes.js';
 import { localize } from '../../../../../nls.js';
 import { NEW_SESSION_ONBOARDING_SEEN_KEY } from './newSessionTour.js';
-import { IsNewChatSessionContext, SessionHarnessPickerVisibleContext, SessionIsolationPickerVisibleContext, SessionWorkspacePickerVisibleContext } from '../../../../common/contextkeys.js';
+import { IsNewChatSessionContext, NewSessionOnboardingHandoffContext, SessionHarnessPickerVisibleContext, SessionIsolationPickerVisibleContext, SessionsWelcomeVisibleContext, SessionWorkspacePickerVisibleContext } from '../../../../common/contextkeys.js';
 
 /**
  * Spotlight steps that walk a brand-new user through the new-session view the
@@ -37,14 +38,14 @@ import { IsNewChatSessionContext, SessionHarnessPickerVisibleContext, SessionIso
  * missing entirely is also skipped automatically.
  */
 export const NEW_SESSION_VIEW_TOUR_ID = 'sessions.onboarding.newSessionView';
+onboardingScenarioRegistry.registerDescriptor({ id: NEW_SESSION_VIEW_TOUR_ID });
 
 /**
  * ExP treatment flag names for Tour 1's A/B experiment.
  *
  * - `behaviorFlag` — boolean: `true` shows the tour (treatment), `false` is control.
- * - `assignmentContextIdFlag` — string: this tour's assignment-context identifier,
- *   the key its scorecard groups on. Both arms MUST resolve it to the *same* value,
- *   which MUST start with the reserved `onb-` prefix (see
+ * - `assignmentContextIdFlag` — string: the current arm's ExP variant name, which
+ *   MUST start with the reserved `onb-` prefix (see
  *   `ONBOARDING_ASSIGNMENT_CONTEXT_PREFIX`). It is distinct from Tour 2's id so the
  *   two tours report into separate scorecards.
  */
@@ -91,7 +92,7 @@ const newSessionViewPayload: ISpotlightPayload = {
  * {@link NewSessionViewTourContribution}, which flips it once an eligible
  * (brand-new) user has the new-session view open and rendered.
  * `ChatContextKeys.enabled` keeps the tour hidden when AI features are disabled.
- * The modal-editor gate keeps the tour hidden while a modal editor is showing.
+ * Modal-editor and welcome gates keep the tour hidden while either is showing.
  *
  * Shares {@link NEW_SESSION_ONBOARDING_SEEN_KEY} with the pulsing-button
  * {@link createNewSessionTour} variant, so a user who has seen either tour is
@@ -101,7 +102,13 @@ export function createNewSessionViewTour(signal: IObservable<boolean>): IOnboard
 	return {
 		id: NEW_SESSION_VIEW_TOUR_ID,
 		seenKey: NEW_SESSION_ONBOARDING_SEEN_KEY,
-		when: ContextKeyExpr.and(ChatContextKeys.enabled, IsNewChatSessionContext, EditorPartModalVisibleContext.toNegated()),
+		when: ContextKeyExpr.and(
+			ChatContextKeys.enabled,
+			IsNewChatSessionContext,
+			EditorPartModalVisibleContext.toNegated(),
+			NewSessionOnboardingHandoffContext.toNegated(),
+			SessionsWelcomeVisibleContext.toNegated(),
+		),
 		trigger: { kind: 'observable', signal },
 		priority: 100,
 		experiment: NEW_SESSION_VIEW_EXPERIMENT,

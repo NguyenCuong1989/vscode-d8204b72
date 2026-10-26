@@ -1,6 +1,11 @@
 ---
+<<<<<<<< HEAD:.github/skills/build-champ/SKILL.md
 name: build-champ
 description: build-champ
+========
+name: build-champ-triage
+description: Find out why a build has failed
+>>>>>>>> main:.github/skills/build-champ-triage/SKILL.md
 disable-model-invocation: true
 ---
 # Role

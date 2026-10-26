@@ -1,6 +1,6 @@
 ---
 name: component
-description: 'Help author a component specification for an agent.'
+description: Help author a component specification for an agent.
 disable-model-invocation: true
 ---
 <overview>

@@ -7,6 +7,7 @@ import { CancellationToken } from '../../../base/common/cancellation.js';
 import { Throttler } from '../../../base/common/async.js';
 import { Emitter, Event } from '../../../base/common/event.js';
 import { DisposableStore } from '../../../base/common/lifecycle.js';
+import { equals } from '../../../base/common/objects.js';
 import { IChannel, IServerChannel } from '../../../base/parts/ipc/common/ipc.js';
 import { ILogService } from '../../log/common/log.js';
 import {
@@ -23,8 +24,6 @@ import {
  * name on its `MessagePortClient`; the agent host reaches it via
  * `server.getChannel(name, c => c.ctx === clientId)` on its
  * `UtilityProcessServer`.
- *
- * Mirrors {@link AGENT_HOST_CLIENT_RESOURCE_CHANNEL} for the reverse FS bridge.
  */
 export const AGENT_HOST_CLIENT_BYOK_LM_CHANNEL = 'agentHostClientByokLm';
 
@@ -75,6 +74,8 @@ export class AgentHostClientByokLmChannel implements IServerChannel {
 	private _modelsSnapshotEvent(): Event<IByokLmModelInfo[]> {
 		const store = new DisposableStore();
 		const throttler = store.add(new Throttler());
+		/** The snapshot last sent, so a change that leaves the BYOK models as they were sends nothing. */
+		let published: IByokLmModelInfo[] | undefined;
 		const emitter = store.add(new Emitter<IByokLmModelInfo[]>({
 			onDidAddFirstListener: () => {
 				if (this._handler.onDidChangeModels) {
@@ -91,7 +92,8 @@ export class AgentHostClientByokLmChannel implements IServerChannel {
 			throttler.queue(async () => {
 				try {
 					const models = await this._handler.listModels(CancellationToken.None);
-					if (!store.isDisposed) {
+					if (!store.isDisposed && !equals(models, published)) {
+						published = models;
 						emitter.fire(models);
 					}
 				} catch (err) {
@@ -112,5 +114,19 @@ export class AgentHostClientByokLmChannel implements IServerChannel {
 			}
 		}
 		throw new Error(`Unknown command '${command}' on AgentHostClientByokLmChannel`);
+	}
+}
+
+export class NullAgentHostClientByokLmChannel implements IServerChannel {
+
+	listen<T>(_ctx: unknown, event: string): Event<T> {
+		if (event === 'models') {
+			return Event.None;
+		}
+		throw new Error(`No event '${event}' on NullAgentHostClientByokLmChannel`);
+	}
+
+	async call<T>(_ctx: unknown, command: string): Promise<T> {
+		throw new Error(`No command '${command}' on NullAgentHostClientByokLmChannel`);
 	}
 }

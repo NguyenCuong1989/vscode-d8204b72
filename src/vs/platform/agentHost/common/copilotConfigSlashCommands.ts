@@ -3,6 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { matchesFuzzy2 } from '../../../base/common/filters.js';
 import { localize } from '../../../nls.js';
 import { SessionConfigKey } from './sessionConfigKeys.js';
 
@@ -139,9 +140,9 @@ export function isCopilotConfigSlashCommand(command: string): boolean {
  * is hidden while already in autopilot mode).
  */
 export interface ICopilotConfigSlashCommandState {
-	/** The session's current `mode` axis value (e.g. `interactive` / `plan` / `autopilot`). */
+	/** The completing chat's current `mode` axis value (e.g. `interactive` / `plan` / `autopilot`). */
 	readonly mode?: string;
-	/** The session's current `autoApprove` axis value (e.g. `default` / `autoApprove`). */
+	/** The completing chat's current `autoApprove` axis value (e.g. `default` / `autoApprove`). */
 	readonly autoApprove?: string;
 }
 
@@ -171,10 +172,10 @@ function shouldOfferOption(option: IConfigSlashOption, state: ICopilotConfigSlas
 
 /**
  * Returns the flattened completion items (one per command form) whose command
- * name matches `typed` (the text after the leading `/`, case-insensitive prefix).
+ * name fuzzy matches `typed` (the text after the leading `/`, case-insensitive).
  * When `typed` is empty, all items are returned.
  *
- * When `state` (the session's current config values) is provided, pure toggle
+ * When `state` (the completing chat's current config values) is provided, pure toggle
  * forms that would be a no-op are filtered out so only the state-changing forms
  * are offered (see {@link shouldOfferOption}).
  */
@@ -182,7 +183,10 @@ export function getCopilotConfigSlashCommandItems(typed: string, state?: ICopilo
 	const typedLower = typed.trim().toLowerCase();
 	const items: ICopilotConfigSlashCommandItem[] = [];
 	for (const command of getConfigSlashCommands()) {
-		if (typedLower && !command.command.toLowerCase().startsWith(typedLower)) {
+		if (typedLower
+			&& !command.command.toLowerCase().startsWith(typedLower)
+			&& (typedLower.length === 1 || matchesFuzzy2(typedLower, command.command) === null)
+		) {
 			continue;
 		}
 		for (const option of command.options) {
