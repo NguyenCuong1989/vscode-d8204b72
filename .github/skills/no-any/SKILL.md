@@ -1,8 +1,8 @@
 ---
-agent: agent
+name: no-any
 description: 'Remove any usage of the any type in TypeScript files'
+disable-model-invocation: true
 ---
-
 I am trying to minimize the usage of `any` types in our TypeScript codebase.
 Find usages of the TypeScript `any` type in this file and replace it with the right type based on usages in the file.
 

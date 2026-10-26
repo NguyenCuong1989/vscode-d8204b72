@@ -50,3 +50,9 @@ dist
 .github/prompts/*.local.prompt.md
 .agents/skills/.local/
 .github/skills/.local/
+
+.codespace-changes-export.tar.gz
+.local-versions/
+.snapshots/
+.cursor/
+extensions/mermaid-chat-features/chat-webview-out/

@@ -1,0 +1,18 @@
+{
+  "projectName": "vscode",
+  "backupFolderPath": "",
+  "versionsPath": ".local-versions",
+  "excludePatterns": [
+    "node_modules",
+    ".git",
+    "*.log",
+    "tmp",
+    "temp",
+    ".local-versioner-config.json"
+  ],
+  "maxVersions": 50,
+  "defaultSnapshotMode": "full",
+  "selectedFolders": [],
+  "createdAt": "2026-10-26T00:30:38.639Z",
+  "version": "1.0.0"
+}

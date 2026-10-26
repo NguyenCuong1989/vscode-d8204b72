@@ -1,7 +1,7 @@
 ---
-agent: agent
+name: doc-comments
 description: 'Update doc comments'
-tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'extensions', 'todos', 'runTests']
+disable-model-invocation: true
 ---
 # Role
 

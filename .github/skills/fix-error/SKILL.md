@@ -1,10 +1,9 @@
 ---
-agent: agent
+name: fix-error
 description: 'Fix an unhandled error from the VS Code error telemetry dashboard'
+disable-model-invocation: true
 argument-hint: Paste the GitHub issue URL for the error-telemetry issue
-tools: ['edit', 'search', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalLastCommand', 'read/terminalSelection', 'execute/createAndRunTask', 'execute/runTask', 'read/getTaskOutput', 'search/usages', 'read/problems', 'search/changes', 'execute/testFailure', 'todo', 'execute/runTests', 'web/fetch', 'web/githubRepo']
 ---
-
 The user has given you a GitHub issue URL for an unhandled error from the VS Code error telemetry dashboard. Fetch the issue to retrieve its details (error message, stack trace, hit count, affected users).
 
 Follow the `fix-errors` skill guidelines to fix this error. Key principles:
