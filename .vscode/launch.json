@@ -1,6 +1,7 @@
 {
 	"version": "0.1.0",
 	"configurations": [
+	
 		{
 			"type": "node",
 			"request": "launch",
@@ -84,7 +85,7 @@
 				"${workspaceFolder}/out/**/*.js"
 			],
 			"presentation": {
-				"hidden": true,
+				"hidden": true
 			}
 		},
 		{
@@ -164,7 +165,6 @@
 			"name": "VS Code API Tests (single folder)",
 			"runtimeExecutable": "${execPath}",
 			"args": [
-				// "${workspaceFolder}", // Uncomment for running out of sources.
 				"${workspaceFolder}/extensions/vscode-api-tests/testWorkspace",
 				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-api-tests",
 				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-api-tests/out/singlefolder-tests",
@@ -264,7 +264,7 @@
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null,
 				"VSCODE_SKIP_PRELAUNCH": "1",
-				"VSCODE_DEV_DEBUG_OBSERVABLES": "1",
+				"VSCODE_DEV_DEBUG_OBSERVABLES": "1"
 			},
 			"cleanUp": "wholeBrowser",
 			"killBehavior": "polite",
@@ -272,7 +272,6 @@
 				"--inspect-brk=5875",
 				"--no-cached-data",
 				"--crash-reporter-directory=${workspaceFolder}/.profile-oss/crashes",
-				// for general runtime freezes: https://github.com/microsoft/vscode/issues/127861#issuecomment-904144910
 				"--disable-features=CalculateNativeWinOcclusion",
 				"--disable-extension=vscode.vscode-api-tests"
 			],
@@ -287,10 +286,11 @@
 			],
 			"browserLaunchLocation": "workspace",
 			"presentation": {
-				"hidden": true,
-			},
+				"hidden": true
+			}
 		},
 		{
+
 			"type": "chrome",
 			"request": "launch",
 			"name": "Launch VS Code Agents Internal",
@@ -338,6 +338,7 @@
 		},
 		{
 			// To debug observables you also need the extension "ms-vscode.debug-value-editor"
+
 			"type": "chrome",
 			"request": "launch",
 			"name": "Launch VS Code Internal (Hot Reload)",
@@ -356,17 +357,18 @@
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null,
 				"VSCODE_SKIP_PRELAUNCH": "1",
 				"VSCODE_DEV_DEBUG": "1",
+
 				"VSCODE_DEV_SERVER_URL": "http://localhost:5199/build/vite/workbench-vite-electron.html",
 				"DEV_WINDOW_SRC": "http://localhost:5199/build/vite/workbench-vite-electron.html",
 				"VSCODE_DEV_DEBUG_OBSERVABLES": "1",
 				"VSCODE_DEV": "1"
+
 			},
 			"cleanUp": "wholeBrowser",
 			"runtimeArgs": [
 				"--inspect-brk=5875",
 				"--no-cached-data",
 				"--crash-reporter-directory=${workspaceFolder}/.profile-oss/crashes",
-				// for general runtime freezes: https://github.com/microsoft/vscode/issues/127861#issuecomment-904144910
 				"--disable-features=CalculateNativeWinOcclusion",
 				"--disable-extension=vscode.vscode-api-tests"
 			],
@@ -381,9 +383,11 @@
 			],
 			"browserLaunchLocation": "workspace",
 			"presentation": {
+
 				"hidden": true,
 			},
 			"preLaunchTask": "Launch Monaco Editor Vite"
+
 		},
 		{
 			"type": "node",
@@ -391,7 +395,7 @@
 			"name": "VS Code Server (Web)",
 			"runtimeExecutable": "${workspaceFolder}/scripts/code-server.sh",
 			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/code-server.bat",
+				"runtimeExecutable": "${workspaceFolder}/scripts/code-server.bat"
 			},
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -424,11 +428,11 @@
 			"enableContentValidation": false,
 			"runtimeExecutable": "${workspaceFolder}/scripts/code.sh",
 			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/code.bat",
+				"runtimeExecutable": "${workspaceFolder}/scripts/code.bat"
 			},
 			"runtimeArgs": [
 				"--inspect-brk=5875",
-				"--no-cached-data",
+				"--no-cached-data"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -718,6 +722,12 @@
 				"group": "monaco",
 				"order": 4
 			}
+		},
+		{
+			"name": "Setup Velocity",
+			"type": "velocity",
+			"request": "launch",
+			"version": 2
 		}
 	],
 	"compounds": [

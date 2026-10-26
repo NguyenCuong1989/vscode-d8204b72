@@ -1,0 +1,62 @@
+logDir : '/workspaces/vscode/.vscode/pty-mcp-server/logs'
+logLevel : 'Debug'
+toolsDir: '/workspaces/vscode/.vscode/pty-mcp-server/tools'
+promptsDir: '/workspaces/vscode/.vscode/pty-mcp-server/prompts'
+resourcesDir: '/workspaces/vscode/.vscode/pty-mcp-server/resources'
+sandboxDir : '/workspaces/vscode/.vscode/pty-mcp-server/sandbox'
+agentAllowedCmds:
+  - cmd
+  - cmd.exe
+  - powershell
+  - powershell.exe
+  - bash
+  - /bin/bash
+sandboxNetworks:
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+invalidPatterns:
+  - 'dels'
+  - 'erases'
+  - 'rmdirs'
+  - 'rms'
+  - 'formats'
+  - 'kills'
+  - taskkill
+  - su
+  - sudo
+  - restart
+  - reboot
+  - shutdown
+  - '.*ssh.*'
+  - '.*telnet.*'
+prompts:
+  - '>>>'
+  - '...'
+  - ']#'
+  - ']$'
+  - ')?'
+  - 'Password:'
+  - 'password:'
+  - 'ghci>'
+  - '--More--'
+  - '(END)'
+invalidChars:
+  - '&&'
+  - '||'
+  - '..'
+invalidCmds:
+  - del
+  - erase
+  - rmdir
+  - rm
+  - format
+  - kill
+  - taskkill
+  - su
+  - sudo
+  - restart
+  - reboot
+  - shutdown
+timeoutMicrosec: 30000000
+  

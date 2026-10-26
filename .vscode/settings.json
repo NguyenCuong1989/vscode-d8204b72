@@ -211,10 +211,19 @@
 	"azureMcp.serverMode": "all",
 	"azureMcp.readOnly": true,
 	"debug.breakpointsView.presentation": "tree",
+	"chat.tools.terminal.outputLocation": "chat",
+	"chat.agentSessionsViewLocation": "single-view",
 	"chat.agentSkillsLocations": {
+		".agents/skills": true,
+		".github/skills": true,
+		".claude/skills": true,
+		"~/.agents/skills": true,
+		"~/.copilot/skills": true,
+		"~/.claude/skills": true,
+		"~/.vscode-remote/extensions/synapsevscode.synapse-1.25.0/copilot/skills": true,
 		".github/skills/.local": true,
 		".agents/skills/.local": true,
-		".claude/skills/.local": true,
+		".claude/skills/.local": true
 	},
 	"chat.mcp.serverSampling": {
 		"vscode/.vscode/mcp.json: component-explorer": {
@@ -277,6 +286,19 @@
 			]
 		}
 	},
+	"python.analysis.extraPaths": [
+		"/home/node/.vscode-remote/extensions/ms-security.ms-sentinel-2.3.0/python"
+	],
+	"editor.formatOnSave": true,
+	"chat.checkpoints.showFileChanges": true,
+	"chat.agent.networkFilter": true,
+	"chat.agent.sandbox.allowNetwork": true,
+	"chat.mcp.gallery.enabled": true,
+	"chat.mcp.assisted.nuget.enabled": true,
+	"chat.includeReferencedInstructions": true,
+	"marquee.widgets.npm-stats.packageNames": [
+		"code-oss-dev"
+	],
 	"terminal.integrated.stickyScroll.enabled": false,
 	"chat.byokUtilityModelDefault": "mainAgent"
 }
